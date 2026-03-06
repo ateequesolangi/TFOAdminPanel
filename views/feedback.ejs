@@ -1,0 +1,958 @@
+<%- include('partials/head') %>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      fetchInsights();
+
+      document.getElementById('fetchInsightsBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        console.log('Fetching new AI insights...');
+        fetchInsights(true);
+      });
+
+        function timeSince(date) {
+          const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        
+          let interval = seconds / 31536000;
+          if (interval > 1) return Math.floor(interval) + " years ago";
+          interval = seconds / 2592000;
+          if (interval > 1) return Math.floor(interval) + " months ago";
+          interval = seconds / 86400;
+          if (interval > 1) return Math.floor(interval) + " days ago";
+          interval = seconds / 3600;
+          if (interval > 1) return Math.floor(interval) + " hours ago";
+          interval = seconds / 60;
+          if (interval > 1) return Math.floor(interval) + " minutes ago";
+          return Math.floor(seconds) + " seconds ago";
+        }
+
+      function fetchInsights(forceNew = false) {
+        const url = `/feedback/ai-insights${forceNew ? '?forceNew=true' : ''}`;
+        document.getElementById('insightsContent').innerHTML = '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>';
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+                document.getElementById('insightsContent').innerHTML = data.insights;
+                document.getElementById('updatedDate').innerHTML = timeSince(data.date);
+            } else {
+              throw new Error('Data fetch was successful but data was not in expected format.');
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching AI insights:', error);
+            document.getElementById('insightsContent').innerText = 'Error fetching insights. Click the AI icon to try again.';
+          });
+      }
+    });
+  </script>
+  <body>
+
+    <div class="main-wrapper">
+        <%- include('partials/sidebar') %>
+        
+        <div class="content-area">
+            <%- include('partials/header') %>
+            
+            <div class="container-fluid pt-4">
+                <div class="row align-items-center mb-4 animate-fade">
+                    <div class="col">
+                        <p class="page-label mb-1">Data Analytics</p>
+                        <h2 class="fw-bold mb-0">Feedback <span class="text-gradient">Insights</span></h2>
+                    </div>
+                    <div class="col-auto d-flex gap-2">
+                         <button type="button" class="btn btn-glass d-flex align-items-center gap-2 px-3 py-2 rounded-pill" id="filterButton">
+                            <ion-icon name="filter-outline" style="color: var(--primary-light);"></ion-icon>
+                            <span class="small fw-bold">Filters</span>
+                            <span class="badge bg-primary rounded-pill filter-count" style="font-size: 0.6rem;">0</span>
+                        </button>
+                        <button type="button" class="btn btn-glass d-flex align-items-center gap-2 px-3 py-2 rounded-pill" id="sortButton">
+                            <ion-icon name="swap-vertical-outline" style="color: var(--secondary);"></ion-icon>
+                            <span class="small fw-bold">Sort</span>
+                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-glass px-3 py-2 rounded-pill" type="button" data-bs-toggle="dropdown">
+                                <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end animate-fade">
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center gap-3 py-2" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
+                                        <ion-icon name="add-circle-outline" style="color: var(--primary-light);"></ion-icon>
+                                        <span class="small">Create Question</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger" id="deleteAllFeedbackBtn">
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                        <span class="small fw-bold">Delete All</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights Section -->
+                <div class="glass-card p-4 mb-4 animate-fade" style="border-left: 3px solid var(--primary);">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-2 rounded-circle animate-pulse" style="background: rgba(99,102,241,0.1);">
+                            <img src="assets/images/aiicon.png" alt="AI" width="24" height="24">
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">AI Feedback Summary</h6>
+                            <small id="updatedDate" class="text-muted" style="font-size: 0.7rem;"></small>
+                        </div>
+                        <button id="fetchInsightsBtn" class="btn btn-glass btn-sm ms-auto px-3 rounded-pill fw-bold" style="font-size: 0.7rem; color: var(--primary-light);">
+                            Regenerate
+                        </button>
+                    </div>
+                    <p class="mb-0 small text-muted" id="insightsContent" style="line-height: 1.7;">
+                        Click regenerate to get fresh AI-powered insights from your user feedback.
+                    </p>
+                </div>
+  
+  <!-- Filter Dropdown Panel -->
+<div class="glass-card mb-3 p-4" id="filterPanel" style="display: none;">
+  <div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0 d-flex align-items-center fw-bold">
+        <span>Filters</span>
+        <span class="badge bg-primary ms-2 filter-count">0</span>
+      </h5>
+      <button class="btn btn-link btn-sm" id="clearAllFilters">Clear all</button>
+    </div>
+    
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label for="filterMode" class="form-label">Mode</label>
+        <select class="form-select filter-control" id="filterMode">
+          <option value="All" selected>All</option>
+          <option value="QuickMatch">QuickMatch</option>
+          <option value="T20">T20</option>
+          <option value="ODI">ODI</option>
+          <option value="Practice">Practice</option>
+          <option value="LocalMultiplayer">LocalMultiplayer</option>
+        </select>
+      </div>
+      
+      <div class="col-md-3">
+        <label for="filterDifficulty" class="form-label">Difficulty</label>
+        <select class="form-select filter-control" id="filterDifficulty">
+          <option value="All" selected>All</option>
+          <option value="Easy">Easy</option>
+          <option value="Normal">Normal</option>
+          <option value="Hard">Hard</option>
+          <option value="Expert">Expert</option>
+          <option value="Pro">Pro</option>
+        </select>
+      </div>
+      
+      <div class="col-md-3">
+        <label for="filterStadium" class="form-label">Stadium</label>
+        <select class="form-select filter-control" id="filterStadium">
+          <option value="All" selected>All</option>
+          <option value="Habibi">Habibi</option>
+          <option value="Twilight">Twilight</option>
+          <option value="Lords">Lords</option>
+          <option value="Oasis">Oasis</option>
+          <option value="Newlands">Newlands</option>
+        </select>
+      </div>
+      
+      <div class="col-md-3">
+        <label for="filterVersion" class="form-label">Version</label>
+        <select class="form-select filter-control" id="filterVersion">
+          <option value="All" selected>All</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sort Dropdown Panel -->
+<div class="glass-card mb-3 p-4" id="sortPanel" style="display: none;">
+  <div>
+    <h5 class="mb-3 fw-bold">Sort By</h5>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-2 sort-option" data-sort="date_desc">
+          <div class="p-2 d-flex align-items-center justify-content-between">
+            <div>Date (newest first)</div>
+            <i class="fa fa-check sort-check" style="color: var(--primary-light);"></i>
+          </div>
+        </div>
+        <div class="mb-2 sort-option" data-sort="date_asc">
+          <div class="p-2 d-flex align-items-center justify-content-between">
+            <div>Date (oldest first)</div>
+            <i class="fa fa-check sort-check" style="display: none; color: var(--primary-light);"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="mb-2 sort-option" data-sort="votes_desc">
+          <div class="p-2 d-flex align-items-center justify-content-between">
+            <div>Votes (high to low)</div>
+            <i class="fa fa-check sort-check" style="display: none; color: var(--primary-light);"></i>
+          </div>
+        </div>
+        <div class="mb-2 sort-option" data-sort="votes_asc">
+          <div class="p-2 d-flex align-items-center justify-content-between">
+            <div>Votes (low to high)</div>
+            <i class="fa fa-check sort-check" style="display: none; color: var(--primary-light);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="sortOption" value="date_desc">
+  </div>
+</div>
+
+<!-- Hidden original sortOption select for compatibility -->
+<select class="d-none" id="originalSortOption">
+  <option value="date_desc" selected>Date (newest first)</option>
+  <option value="date_asc">Date (oldest first)</option>
+  <option value="votes_desc">Votes (high to low)</option>
+  <option value="votes_asc">Votes (low to high)</option>
+</select>
+
+
+   <!-- Chart Data Section -->
+   <div class="mt-4">
+    <div id="feedbackCharts">
+      <div id="activeFeedbackCharts" class="row"></div>
+      <hr>
+      <h5 class="mt-4 fw-bold">Inactive Questions</h5>
+      <div id="inactiveFeedbackCharts" class="row"></div>
+    </div>
+  </div>
+
+              <!-- Alert message container -->
+              <div class="mt-3">
+                <div id="success-alert" class="alert alert-success alert-dismissible fade" role="alert"
+                  style="display: none;">
+                  <i class="fa fa-check-circle"></i> <span id="success-message"></span>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div id="error-alert" class="alert alert-danger alert-dismissible fade" role="alert"
+                  style="display: none;">
+                  <i class="fa fa-exclamation-circle"></i> <span id="error-message"></span>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              </div>
+
+            <%- include('partials/footer') %>
+          </div>
+        </div>
+
+          <!-- Create Question Modal -->
+          <div class="modal fade" id="createQuestionModal" tabindex="-1" aria-labelledby="createQuestionModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-md modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="createQuestionModalLabel">Create Feedback Question</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form id="createQuestionForm" action="/feedback/create" method="POST">
+                    <div class="mb-3">
+                      <label for="questionText" class="form-label">Question Text</label>
+                      <input type="text" class="form-control" id="questionText" name="question_text" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="questionType" class="form-label">Question Type</label>
+                      <select class="form-select" id="questionType" name="question_type" required>
+                        <option value="yesno">Yes/No</option>
+                        <option value="rating">Rating</option>
+                        <option value="emoji">Emoji</option>
+                      </select>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label for="isActive" class="form-label">Is Active</label>
+                          <select class="form-select" id="isActive" name="is_active" required>
+                            <option value="1" selected>Yes</option>
+                            <option value="0">No</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label for="versionName" class="form-label">Version Name</label>
+                          <input type="text" class="form-control" id="versionName" name="version_name">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label for="mode" class="form-label">Mode</label>
+                          <select class="form-select" id="mode" name="mode" required>
+                            <option value="All" selected>All</option>
+                            <option value="QuickMatch">QuickMatch</option>
+                            <option value="T20">T20</option>
+                            <option value="ODI">ODI</option>
+                            <option value="Practice">Practice</option>
+                            <option value="LocalMultiplayer">LocalMultiplayer</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label for="difficulty" class="form-label">Difficulty</label>
+                          <select class="form-select" id="difficulty" name="difficulty" required>
+                            <option value="All" selected>All</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Hard">Hard</option>
+                            <option value="Expert">Expert</option>
+                            <option value="Pro">Pro</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label for="stadium" class="form-label">Stadium</label>
+                          <select class="form-select" id="stadium" name="stadium" required>
+                            <option value="All" selected>All</option>
+                            <option value="Habibi">Habibi</option>
+                            <option value="Twilight">Twilight</option>
+                            <option value="Lords">Lords</option>
+                            <option value="Oasis">Oasis</option>
+                            <option value="Newlands">Newlands</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer px-0 pb-0">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary">Insert</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <!-- Edit Question Modal -->
+          <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-md modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editQuestionModalLabel">Edit Feedback Question</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form id="editQuestionForm">
+                    <input type="hidden" id="editQuestionId" name="question_id">
+                    <div class="mb-3">
+                      <label for="editQuestionText" class="form-label">Question Text</label>
+                      <input type="text" class="form-control" id="editQuestionText" name="question_text" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editQuestionType" class="form-label">Question Type</label>
+                      <select class="form-select" id="editQuestionType" name="question_type" required>
+                        <option value="yesno">Yes/No</option>
+                        <option value="rating">Rating</option>
+                        <option value="emoji">Emoji</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editIsActive" class="form-label">Is Active</label>
+                      <select class="form-select" id="editIsActive" name="is_active" required>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                      </select>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label for="editMode" class="form-label">Mode</label>
+                          <select class="form-select" id="editMode" name="mode" required>
+                            <option value="All">All</option>
+                            <option value="QuickMatch">QuickMatch</option>
+                            <option value="T20">T20</option>
+                            <option value="ODI">ODI</option>
+                            <option value="Practice">Practice</option>
+                            <option value="LocalMultiplayer">LocalMultiplayer</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label for="editDifficulty" class="form-label">Difficulty</label>
+                          <select class="form-select" id="editDifficulty" name="difficulty" required>
+                            <option value="All">All</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Hard">Hard</option>
+                            <option value="Expert">Expert</option>
+                            <option value="Pro">Pro</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label for="editStadium" class="form-label">Stadium</label>
+                          <select class="form-select" id="editStadium" name="stadium" required>
+                            <option value="All">All</option>
+                            <option value="Habibi">Habibi</option>
+                            <option value="Twilight">Twilight</option>
+                            <option value="Lords">Lords</option>
+                            <option value="Oasis">Oasis</option>
+                            <option value="Newlands">Newlands</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer px-0 pb-0">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <%- include('partials/footer') %>
+
+            <a href="javaScript:;" class="back-to-top">
+              <ion-icon name="arrow-up-outline"></ion-icon>
+            </a>
+
+            <div class="overlay nav-toggle-icon"></div>
+
+    </div>
+
+    <!-- JS Files-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easy-pie-chart/2.1.7/jquery.easypiechart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/index.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+     document.addEventListener('DOMContentLoaded', function() {
+  fetchDataAndRender();
+  populateVersionFilter();
+  setupFilterUI();
+  document.getElementById('deleteAllFeedbackBtn').addEventListener('click', deleteAllFeedback);
+  document.getElementById('editQuestionForm').addEventListener('submit', handleEditFormSubmit);
+});
+
+function setupFilterUI() {
+  const filterButton = document.getElementById('filterButton');
+  const sortButton = document.getElementById('sortButton');
+  const filterPanel = document.getElementById('filterPanel');
+  const sortPanel = document.getElementById('sortPanel');
+  const clearAllFilters = document.getElementById('clearAllFilters');
+  const filterControls = document.querySelectorAll('.filter-control');
+  const sortOptions = document.querySelectorAll('.sort-option');
+  const sortOptionInput = document.getElementById('sortOption');
+  
+  filterButton.addEventListener('click', function() {
+    if (filterPanel.style.display === 'none') {
+      sortPanel.style.display = 'none';
+      filterPanel.style.display = 'block';
+    } else {
+      filterPanel.style.display = 'none';
+    }
+  });
+  
+  sortButton.addEventListener('click', function() {
+    if (sortPanel.style.display === 'none') {
+      filterPanel.style.display = 'none';
+      sortPanel.style.display = 'block';
+    } else {
+      sortPanel.style.display = 'none';
+    }
+  });
+  
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('#filterButton') && 
+        !event.target.closest('#sortButton') && 
+        !event.target.closest('#filterPanel') && 
+        !event.target.closest('#sortPanel')) {
+      filterPanel.style.display = 'none';
+      sortPanel.style.display = 'none';
+    }
+  });
+  
+  clearAllFilters.addEventListener('click', function() {
+    filterControls.forEach(control => {
+      control.value = 'All';
+    });
+    updateFilterCount();
+    applyFilters();
+  });
+  
+  filterControls.forEach(control => {
+    control.addEventListener('change', function() {
+      updateFilterCount();
+      applyFilters();
+    });
+  });
+  
+  sortOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      const sortValue = this.dataset.sort;
+      sortOptionInput.value = sortValue;
+      document.querySelectorAll('.sort-check').forEach(check => {
+        check.style.display = 'none';
+      });
+      this.querySelector('.sort-check').style.display = 'block';
+      sortPanel.style.display = 'none';
+      applyFilters();
+    });
+  });
+  
+  const defaultSortOption = 'date_desc';
+  sortOptionInput.value = defaultSortOption;
+  document.querySelectorAll('.sort-check').forEach(check => {
+    check.style.display = 'none';
+  });
+  document.querySelector(`.sort-option[data-sort="${defaultSortOption}"] .sort-check`).style.display = 'block';
+  updateFilterCount();
+}
+
+function updateFilterCount() {
+  let activeFilterCount = 0;
+  const filterControls = document.querySelectorAll('.filter-control');
+  
+  filterControls.forEach(control => {
+    if (control.value !== 'All') {
+      activeFilterCount++;
+    }
+  });
+  
+  const filterCountBadges = document.querySelectorAll('.filter-count');
+  filterCountBadges.forEach(badge => {
+    badge.textContent = activeFilterCount;
+  });
+  
+  const clearAllButton = document.getElementById('clearAllFilters');
+  clearAllButton.style.display = activeFilterCount > 0 ? 'block' : 'none';
+}
+
+function fetchDataAndRender() {
+  showLoadingSpinner();
+  fetch('/feedback/chart-data')
+    .then(response => response.json())
+    .then(data => {
+      hideLoadingSpinner();
+      if (data.success) {
+        const sortOption = document.getElementById('sortOption').value;
+        let sortedQuestions = data.questions;
+        
+        if (sortOption === 'date_desc') {
+          sortedQuestions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else if (sortOption === 'date_asc') {
+          sortedQuestions.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        } else if (sortOption === 'votes_desc') {
+          sortedQuestions.sort((a, b) => (b.totalResponses || 0) - (a.totalResponses || 0));
+        } else if (sortOption === 'votes_asc') {
+          sortedQuestions.sort((a, b) => (a.totalResponses || 0) - (b.totalResponses || 0));
+        }
+        
+        renderFeedbackCharts(sortedQuestions);
+      } else {
+        console.error('Failed to fetch chart data.');
+      }
+    })
+    .catch(error => {
+      hideLoadingSpinner();
+      console.error('Error fetching chart data:', error);
+    });
+}
+
+function renderFeedbackCharts(questions) {
+  const activeContainer = document.getElementById('activeFeedbackCharts');
+  const inactiveContainer = document.getElementById('inactiveFeedbackCharts');
+  activeContainer.innerHTML = '';
+  inactiveContainer.innerHTML = '';
+  let chartIndex = 0;
+
+  questions.forEach(question => {
+    const colDiv = document.createElement('div');
+    colDiv.className = 'col-12 col-md-4 col-lg-3 mb-4 position-relative';
+
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'card glass-card h-100';
+
+    const cardBodyDiv = document.createElement('div');
+    cardBodyDiv.className = 'card-body d-flex flex-column';
+
+    const title = document.createElement('h5');
+    title.className = 'card-title';
+    title.textContent = question.question_text;
+
+    const topRightDiv = document.createElement('div');
+    topRightDiv.className = 'top-right-info';
+
+    const totalResponsesDiv = document.createElement('div');
+    totalResponsesDiv.className = 'total-responses';
+    totalResponsesDiv.innerHTML = `<i class="fa fa-users"></i> ${question.totalResponses}`;
+
+    const averageRatingDiv = document.createElement('div');
+    averageRatingDiv.className = 'average-rating';
+    averageRatingDiv.innerHTML = `<i class="fa fa-star"></i> ${question.averageRating}`;
+
+    topRightDiv.appendChild(totalResponsesDiv);
+    if (question.question_type === 'rating') {
+      topRightDiv.appendChild(averageRatingDiv);
+    }
+
+    const chartContainer = document.createElement('div');
+    chartContainer.className = 'chart-container flex-grow-1 mt-3';
+    chartContainer.style.position = 'relative';
+    chartContainer.style.minHeight = '250px';
+
+    const canvas = document.createElement('canvas');
+    canvas.id = `chart-${chartIndex++}`;
+    chartContainer.appendChild(canvas);
+
+    const versionNameDiv = document.createElement('div');
+    versionNameDiv.className = 'version-name';
+    versionNameDiv.textContent = `V: ${question.version_name || 'N/A'}`;
+    topRightDiv.appendChild(versionNameDiv);
+
+    const deleteButton = document.createElement('i');
+    deleteButton.className = 'fa fa-times delete-icon';
+    deleteButton.addEventListener('click', () => confirmDeleteQuestion(question.question_id));
+
+    cardBodyDiv.appendChild(title);
+    cardBodyDiv.appendChild(chartContainer);
+    cardDiv.appendChild(topRightDiv);
+    cardDiv.appendChild(cardBodyDiv);
+    cardDiv.appendChild(deleteButton);
+    colDiv.appendChild(cardDiv);
+
+    const editButton = document.createElement('i');
+    editButton.className = 'fa fa-pencil edit-icon';
+    editButton.style.display = 'none';
+    editButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEditModal(question);
+    });
+    cardDiv.appendChild(editButton);
+    cardDiv.addEventListener('mouseenter', () => {
+      editButton.style.display = 'block';
+    });
+    cardDiv.addEventListener('mouseleave', () => {
+      editButton.style.display = 'none';
+    });
+
+    const ctx = canvas.getContext('2d');
+    let chartConfig = {};
+
+    if (question.question_type === 'yesno') {
+      chartConfig = {
+        type: 'pie',
+        data: {
+          labels: ['Yes', 'No'],
+          datasets: [{
+            data: [question.aggregatedResponses.Yes, question.aggregatedResponses.No],
+            backgroundColor: ['#10B981', '#EF4444']
+          }]
+        },
+        options: { plugins: { valueDisplay: true }, maintainAspectRatio: false, responsive: true },
+        plugins: [valueDisplayPlugin]
+      };
+    } else if (question.question_type === 'rating') {
+      const labels = question.aggregatedResponses.map(item => `${item.star} Star`);
+      const data = question.aggregatedResponses.map(item => item.count);
+      chartConfig = {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: '#F59E0B'
+          }]
+        },
+        options: {
+          plugins: { valueDisplay: true },
+          scales: { y: { beginAtZero: true } },
+          maintainAspectRatio: false,
+          responsive: true
+        },
+        plugins: [valueDisplayPlugin]
+      };
+    } else if (question.question_type === 'emoji') {
+      chartConfig = {
+        type: 'pie',
+        data: {
+          labels: ['Like', 'Heart', 'Wow', 'Sad', 'Angry'],
+          datasets: [{
+            data: [question.aggregatedResponses.Like, question.aggregatedResponses.Heart, question.aggregatedResponses.Wow, question.aggregatedResponses.Sad, question.aggregatedResponses.Angry],
+            backgroundColor: ['#10B981', '#F472B6', '#F59E0B', '#3B82F6', '#EF4444']
+          }]
+        },
+        options: { plugins: { valueDisplay: true }, maintainAspectRatio: false, responsive: true },
+        plugins: [valueDisplayPlugin]
+      };
+    }
+
+    new Chart(ctx, chartConfig);
+
+    if (question.is_active == 1) {
+      activeContainer.appendChild(colDiv);
+    } else {
+      inactiveContainer.appendChild(colDiv);
+    }
+  });
+}
+
+function openEditModal(question) {
+  const modal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
+  document.getElementById('editQuestionId').value = question.question_id;
+  document.getElementById('editQuestionText').value = question.question_text;
+  document.getElementById('editQuestionType').value = question.question_type;
+  document.getElementById('editIsActive').value = question.is_active;
+  document.getElementById('editMode').value = question.mode;
+  document.getElementById('editDifficulty').value = question.difficulty;
+  document.getElementById('editStadium').value = question.stadium;
+  modal.show();
+}
+
+function handleEditFormSubmit(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const updatedQuestion = Object.fromEntries(formData.entries());
+  fetch('/feedback/updateQuestion', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updatedQuestion),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showToast('Feedback question updated successfully.');
+        bootstrap.Modal.getInstance(document.getElementById('editQuestionModal')).hide();
+        fetchDataAndRender();
+      } else {
+        showToast('Failed to update feedback question. Please try again.', 'danger');
+      }
+    })
+    .catch(error => {
+      console.error('Error updating feedback question:', error);
+      showToast('An error occurred while updating the feedback question.', 'danger');
+    });
+}
+
+function applyFilters() {
+  showLoadingSpinner();
+  const mode = document.getElementById('filterMode').value;
+  const difficulty = document.getElementById('filterDifficulty').value;
+  const stadium = document.getElementById('filterStadium').value;
+  const version = document.getElementById('filterVersion').value;
+  const sortOption = document.getElementById('sortOption').value;
+
+  fetch('/feedback/chart-data')
+    .then(response => response.json())
+    .then(data => {
+      hideLoadingSpinner();
+      if (data.success) {
+        let filteredQuestions = data.questions;
+
+        if (mode !== 'All') {
+          filteredQuestions = filteredQuestions.filter(question => question.mode === mode);
+        }
+        if (difficulty !== 'All') {
+          filteredQuestions = filteredQuestions.filter(question => question.difficulty === difficulty);
+        }
+        if (stadium !== 'All') {
+          filteredQuestions = filteredQuestions.filter(question => question.stadium === stadium);
+        }
+        if (version !== 'All') {
+          filteredQuestions = filteredQuestions.filter(question => question.version_name === version);
+        }
+
+        if (sortOption === 'date_desc') {
+          filteredQuestions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else if (sortOption === 'date_asc') {
+          filteredQuestions.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        } else if (sortOption === 'votes_desc') {
+          filteredQuestions.sort((a, b) => (b.totalResponses || 0) - (a.totalResponses || 0));
+        } else if (sortOption === 'votes_asc') {
+          filteredQuestions.sort((a, b) => (a.totalResponses || 0) - (b.totalResponses || 0));
+        }
+
+        renderFeedbackCharts(filteredQuestions);
+      } else {
+        console.error('Failed to fetch chart data.');
+      }
+    })
+    .catch(error => {
+      hideLoadingSpinner();
+      console.error('Error fetching chart data:', error);
+    });
+}
+
+function populateVersionFilter() {
+  fetch('/feedback/versions')
+    .then(response => response.json())
+    .then(data => {
+      console.log("Fetched versions:", data.versions);
+      const filterVersion = document.getElementById('filterVersion');
+      filterVersion.innerHTML = '<option value="All" selected>All</option>';
+      data.versions.forEach(version => {
+        const option = document.createElement('option');
+        option.value = version;
+        option.textContent = version;
+        filterVersion.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error fetching versions:', error));
+}
+
+function confirmDeleteQuestion(questionId) {
+  if (confirm('Are you sure you want to delete this feedback question and all its responses?')) {
+    fetch(`/feedback/delete/${questionId}`, { method: 'DELETE' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showToast('Feedback question has been deleted successfully.');
+          fetchDataAndRender();
+        } else {
+          showToast('Failed to delete the feedback question. Please try again.', 'danger');
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting feedback question:', error);
+        showToast('An error occurred while deleting the feedback question.', 'danger');
+      });
+  }
+}
+
+function deleteAllFeedback() {
+  if (confirm('Are you sure you want to delete all feedback questions and their responses?')) {
+    fetch('/feedback/delete-all', { method: 'DELETE' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showToast('All feedback questions and their responses have been deleted.');
+          fetchDataAndRender();
+        } else {
+          showToast('Failed to delete all feedback questions. Please try again.', 'danger');
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting all feedback questions:', error);
+        showToast('An error occurred while deleting all feedback questions.', 'danger');
+      });
+  }
+}
+
+function showLoadingSpinner() {
+  const container = document.getElementById('feedbackCharts');
+  if (!document.getElementById('spinner')) {
+    const spinner = document.createElement('div');
+    spinner.id = 'spinner';
+    spinner.className = 'd-flex justify-content-center';
+    spinner.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>';
+    container.appendChild(spinner);
+  }
+}
+
+function hideLoadingSpinner() {
+  const spinner = document.getElementById('spinner');
+  if (spinner) spinner.remove();
+}
+
+function showToast(message, type = 'success') {
+  const toastContainer = document.getElementById('toastContainer');
+  
+  if (!toastContainer) {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    document.body.appendChild(container);
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = `toast align-items-center text-white bg-${type} border-0`;
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.setAttribute('aria-atomic', 'true');
+  
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+  
+  document.getElementById('toastContainer').appendChild(toast);
+  
+  const bsToast = new bootstrap.Toast(toast, { autohide: true, delay: 3000 });
+  bsToast.show();
+  
+  toast.addEventListener('hidden.bs.toast', function() { toast.remove(); });
+}
+
+const valueDisplayPlugin = {
+  id: 'valueDisplay',
+  afterDatasetsDraw: function(chart) {
+    const ctx = chart.ctx;
+    chart.data.datasets.forEach(function(dataset, i) {
+      const meta = chart.getDatasetMeta(i);
+      if (!meta.hidden) {
+        const total = dataset.data.reduce((sum, val) => sum + val, 0);
+        meta.data.forEach(function(element, index) {
+          if (dataset.data[index] == 0) return;
+          
+          ctx.fillStyle = 'rgb(200, 200, 200)';
+          const fontSize = 12;
+          const fontStyle = 'normal';
+          const fontFamily = 'Inter, Helvetica Neue';
+          ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const padding = 5;
+          const position = element.tooltipPosition();
+
+          let dataString = dataset.data[index].toString();
+          if (
+            chart.config.type === 'pie' &&
+            chart.data.labels.length === 2 &&
+            chart.data.labels[0] === 'Yes' &&
+            chart.data.labels[1] === 'No' &&
+            total > 0
+          ) {
+            const percentage = Math.round((dataset.data[index] / total) * 100);
+            dataString += " (" + percentage + "%)";
+          }
+          ctx.fillText(dataString, position.x, position.y - (fontSize / 2) - padding);
+        });
+      }
+    });
+  }
+};
+
+function initBootstrapComponents() {
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function(tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+  
+  const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+  popoverTriggerList.map(function(popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  initBootstrapComponents();
+});
+     </script>
+  </body>
+
+  </html>

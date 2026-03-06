@@ -1,0 +1,49 @@
+<%- include('partials/head') %>
+<body>
+
+    <div class="main-wrapper">
+        <%- include('partials/sidebar') %>
+
+        <div class="content-area">
+            <%- include('partials/header') %>
+
+            <div class="container-fluid pt-4">
+                <div class="row align-items-center mb-4 animate-fade">
+                    <div class="col">
+                        <p class="page-label mb-1">Development</p>
+                        <h2 class="fw-bold mb-0">Test <span class="text-gradient">Prompt</span></h2>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 animate-fade">
+                    <h5 class="fw-bold mb-3">Current AI Prompt</h5>
+                    <div class="prompt-display">
+                        <%= prompt %>
+                    </div>
+                </div>
+            </div>
+                <%- include('partials/footer') %>
+            </div>
+    
+            <a href="javaScript:;" class="back-to-top">
+                <ion-icon name="arrow-up-outline"></ion-icon>
+            </a>
+    
+            <div class="overlay nav-toggle-icon"></div>
+        </div>
+
+    <!-- JS Files-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+    <script src="assets/plugins/easyPieChart/jquery.easypiechart.js"></script>
+    <script src="assets/plugins/chartjs/chart.min.js"></script>
+    <script src="assets/js/index.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>

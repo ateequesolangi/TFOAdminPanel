@@ -1,0 +1,99 @@
+<%- include('partials/head') %>
+<body>
+
+    <div class="main-wrapper">
+        <%- include('partials/sidebar') %>
+
+        <div class="content-area">
+            <%- include('partials/header') %>
+
+            <div class="container-fluid pt-4">
+                <div class="row align-items-center mb-4 animate-fade">
+                    <div class="col">
+                        <p class="page-label mb-1">Configuration</p>
+                        <h2 class="fw-bold mb-0">AI <span class="text-gradient">Prompt</span></h2>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <ion-icon name="add-outline" style="font-size: 1.2rem;"></ion-icon>
+                            <span class="fw-bold small">Add Prompt</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 animate-fade">
+                    <h5 class="fw-bold mb-3">Current Prompt</h5>
+                    <div class="prompt-display">
+                        <%= prompt %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadModalLabel">Add Prompt</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="promptForm">
+                                <div class="mb-3">
+                                    <label for="promptText" class="form-label">Prompt</label>
+                                    <input type="text" class="form-control" id="promptText" placeholder="Write Your AI Prompt Query" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Prompt</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%- include('partials/footer') %>
+        </div>
+
+        <a href="javaScript:;" class="back-to-top">
+            <ion-icon name="arrow-up-outline"></ion-icon>
+        </a>
+
+        <div class="overlay nav-toggle-icon"></div>
+    </div>
+
+    <!-- JS Files-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+    <script src="assets/plugins/easyPieChart/jquery.easypiechart.js"></script>
+    <script src="assets/plugins/chartjs/chart.min.js"></script>
+    <script src="assets/js/index.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#promptForm').on('submit', function(event) {
+                event.preventDefault();
+                const promptText = $('#promptText').val();
+                
+                $.ajax({
+                    url: '/dashboard/prompt',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ text: promptText }),
+                    success: function(response) {
+                        alert('Prompt saved successfully!');
+                        $('#uploadModal').modal('hide');
+                        $('#promptText').val('');
+                    },
+                    error: function(error) {
+                        alert('Error saving prompt');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<%- include('partials/head') %>
+
+    <body>
+
+        <div class="main-wrapper">
+            <%- include('partials/sidebar') %>
+
+            <div class="content-area">
+                <%- include('partials/header') %>
+
+                <div class="container-fluid pt-4">
+                    <div class="row align-items-center mb-4 animate-fade">
+                        <div class="col">
+                            <p class="page-label mb-1">Content Management</p>
+                            <h2 class="fw-bold mb-0">Local <span class="text-gradient">Multiplayer</span></h2>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 animate-fade">
+                        <h5 class="fw-bold mb-3">Upload Local Multiplayer</h5>
+                        <div id="alertContainer"></div>
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="file-upload mb-3">
+                                <input type="file" id="zipFile" name="zipFile" accept=".zip" required>
+                                <div class="upload-icon">
+                                    <i class="fa fa-file-archive"></i>
+                                </div>
+                                <div class="upload-text">
+                                    Drag and Drop or <a href="#">Browse</a> Your Zip file
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-upload me-2"></i>Upload</button>
+                        </form>
+                        <div class="progress-container mt-3">
+                            <div class="file-info">
+                                <span class="file-name" id="fileName"></span>
+                                <span class="file-size" id="fileSize"></span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
+                                    aria-valuemax="100">0%</div>
+                            </div>
+                            <div class="upload-status" id="uploadStatus"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <%- include('partials/footer') %>
+            </div>
+
+            <a href="javaScript:;" class="back-to-top">
+                <ion-icon name="arrow-up-outline"></ion-icon>
+            </a>
+
+            <div class="overlay nav-toggle-icon"></div>
+        </div>
+
+        <!-- JS Files-->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+        <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+        <script src="assets/js/bootstrap.bundle.min.js"></script>
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+        <script src="assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+        <script src="assets/plugins/easyPieChart/jquery.easypiechart.js"></script>
+        <script src="assets/plugins/chartjs/chart.min.js"></script>
+        <script src="assets/js/index.js"></script>
+        <script src="assets/js/main.js"></script>
+         <script>
+        $(document).ready(function () {
+            $('#uploadForm').on('submit', function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const fileInput = $('#zipFile')[0];
+                const file = fileInput.files[0];
+
+                if (file.size > 5242880) {
+                    showAlert('danger', 'Failed to upload. The file size exceeds the maximum limit of 5 MB.');
+                    return;
+                }
+
+                $('#fileName').text(file.name);
+                $('#fileSize').text((file.size / (1024 * 1024)).toFixed(2) + ' MB');
+
+                $('.progress-container').show();
+                $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+                $('#uploadStatus').text('Uploading...');
+
+                $.ajax({
+                    url: '/multiplayer/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function () {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function (evt) {
+                            if (evt.lengthComputable) {
+                                const percentComplete = evt.loaded / evt.total * 100;
+                                $('.progress-bar').css('width', percentComplete + '%').attr('aria-valuenow', percentComplete).text(Math.round(percentComplete) + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            showAlert('success', 'Successfully uploaded local multiplayer.');
+                            $('#uploadStatus').text('Upload complete.');
+                            $('#btnDone').show();
+                        } else {
+                            showAlert('danger', 'Failed to upload. ' + response.message);
+                            $('#uploadStatus').text('Upload failed.');
+                        }
+                    },
+                    error: function () {
+                        showAlert('danger', 'Failed to upload. An error occurred.');
+                        $('#uploadStatus').text('Upload failed.');
+                    },
+                    complete: function () {
+                        $('.progress-bar').css('width', '100%').attr('aria-valuenow', 100).text('100%');
+                    }
+                });
+            });
+
+            function showAlert(type, message) {
+                const alertHtml = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="fa ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+                $('#alertContainer').html(alertHtml);
+            }
+        });
+    </script>
+
+    </body>
+
+    </html>

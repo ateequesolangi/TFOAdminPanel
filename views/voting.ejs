@@ -1,0 +1,306 @@
+<%- include('partials/head') %>
+<body>
+
+    <div class="main-wrapper">
+        <%- include('partials/sidebar') %>
+        
+        <div class="content-area">
+            <%- include('partials/header') %>
+            
+            <div class="container-fluid pt-4">
+                <div class="row align-items-center mb-4 animate-fade">
+                    <div class="col">
+                        <p class="page-label mb-1">Community Engagement</p>
+                        <h2 class="fw-bold mb-0">Voting <span class="text-gradient">System</span></h2>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
+                            <ion-icon name="add-outline" style="font-size: 1.2rem;"></ion-icon>
+                            <span class="fw-bold small">Create New Poll</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 animate-fade">
+                    <h5 class="fw-bold mb-3">Voting Results</h5>
+                    <div id="votingList"></div>
+                </div>
+             
+            </div>
+        </div>
+
+        <!-- Create Question Modal -->
+        <div class="modal fade" id="createQuestionModal" tabindex="-1" aria-labelledby="createQuestionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createQuestionModalLabel">Create Voting Question</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createQuestionForm">
+                            <div class="mb-3">
+                                <label for="questionText" class="form-label">Question</label>
+                                <input type="text" class="form-control" id="questionText" required>
+                            </div>
+                            <div id="optionsContainer">
+                                <div class="mb-3">
+                                    <label class="form-label">Option 1</label>
+                                    <input type="text" class="form-control option-input" required>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" id="addOptionBtn">
+                                <i class="fa fa-plus me-1"></i> Add Option
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="submitQuestionBtn">Create List</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <%- include('partials/footer') %>
+            </div>
+    
+            <a href="javaScript:;" class="back-to-top">
+                <ion-icon name="arrow-up-outline"></ion-icon>
+            </a>
+    
+            <div class="overlay nav-toggle-icon"></div>
+        </div>
+
+    <!-- JS Files-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+    <script src="assets/plugins/easyPieChart/jquery.easypiechart.js"></script>
+    <script src="assets/plugins/chartjs/chart.min.js"></script>
+    <script src="assets/js/index.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            let optionCount = 1;
+    
+            $('#addOptionBtn').click(function() {
+                optionCount++;
+                $('#optionsContainer').append(`
+                    <div class="mb-3">
+                        <label class="form-label">Option ${optionCount}</label>
+                        <input type="text" class="form-control option-input" required>
+                    </div>
+                `);
+            });
+    
+            $('#submitQuestionBtn').click(function() {
+    const questionText = $('#questionText').val();
+    const options = $('.option-input').map(function() {
+        return $(this).val();
+    }).get();
+
+    $.ajax({
+        url: '/voting/create',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ question_text: questionText, options: options }),
+        success: function(response) {
+            if (response.success) {
+                alert('Voting question created successfully!');
+                location.reload();
+            } else {
+                alert('Failed to create voting question. Please try again.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+            alert('An error occurred. Please try again.');
+        }
+    });
+});
+    
+            // Load options for each question
+            $('.options-container').each(function() {
+                const questionId = $(this).data('question-id');
+                const container = $(this);
+    
+                $.ajax({
+                    url: `/voting/options/${questionId}`,
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            response.options.forEach(function(option) {
+                                container.append(`
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="option${questionId}" id="option${option.id}" value="${option.id}">
+                                        <label class="form-check-label" for="option${option.id}">
+                                            ${option.option_text} (Votes: ${option.votes})
+                                        </label>
+                                    </div>
+                                `);
+                            });
+                            container.append(`
+                                <button class="btn btn-primary mt-2 vote-btn" data-question-id="${questionId}">Vote</button>
+                            `);
+                        }
+                    }
+                });
+            });
+    
+            // Handle voting
+            $(document).on('click', '.vote-btn', function() {
+                const questionId = $(this).data('question-id');
+                const selectedOption = $(`input[name="option${questionId}"]:checked`).val();
+    
+                if (!selectedOption) {
+                    alert('Please select an option before voting.');
+                    return;
+                }
+    
+                $.ajax({
+                    url: '/voting/vote',
+                    method: 'POST',
+                    data: { user_id: 1, question_id: questionId, option_id: selectedOption },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Vote submitted successfully!');
+                            location.reload();
+                        } else {
+                            alert('Failed to submit vote. Please try again.');
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+  
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    fetchVotingResults();
+
+    function fetchVotingResults() {
+        fetch('/voting/voting-results')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById('votingList');
+                    container.innerHTML = '';
+
+                    data.questions.forEach(question => {
+                        const card = document.createElement('div');
+                        card.className = 'glass-card p-3 mb-3';
+
+                        const cardBody = document.createElement('div');
+
+                        // Sort options: highest votes first, then isDone at the bottom
+                        question.options.sort((a, b) => {
+                            if (a.isDone === b.isDone) {
+                                return b.votes - a.votes;
+                            }
+                            return a.isDone - b.isDone;
+                        });
+
+                        const checkedOptionsContainer = document.createElement('div');
+                        checkedOptionsContainer.className = 'mt-3';
+                        checkedOptionsContainer.style.opacity = '0.5';
+
+                        question.options.forEach(option => {
+                            const optionContainer = document.createElement('div');
+                            optionContainer.className = `option-container mb-2 ${option.isDone ? '' : ''}`;
+
+                            const optionLabel = document.createElement('div');
+                            optionLabel.className = 'd-flex justify-content-between align-items-center';
+
+                            const optionText = document.createElement('span');
+                            optionText.textContent = option.option_text;
+                            optionText.style.color = 'var(--text-secondary)';
+
+                            const percentage = document.createElement('span');
+                            percentage.className = 'badge';
+                            percentage.style.cssText = 'background: rgba(99,102,241,0.1); color: var(--primary-light); border: 1px solid rgba(99,102,241,0.15);';
+                            percentage.textContent = `${option.percentage}%`;
+
+                            const checkboxContainer = document.createElement('div');
+                            checkboxContainer.className = 'form-check';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.className = 'form-check-input';
+                            checkbox.type = 'checkbox';
+                            checkbox.checked = option.isDone === 1;
+                            checkbox.addEventListener('click', () => toggleOption(option.option_id, checkbox.checked));
+
+                            checkboxContainer.appendChild(checkbox);
+
+                            optionLabel.appendChild(checkboxContainer);
+                            optionLabel.appendChild(optionText);
+                            optionLabel.appendChild(percentage);
+
+                            const progressBar = document.createElement('div');
+                            progressBar.className = 'progress mt-1';
+
+                            const progress = document.createElement('div');
+                            progress.className = 'progress-bar';
+                            progress.role = 'progressbar';
+                            progress.style.width = `${option.percentage}%`;
+                            progress.setAttribute('aria-valuenow', option.percentage);
+                            progress.setAttribute('aria-valuemin', '0');
+                            progress.setAttribute('aria-valuemax', '100');
+
+                            progressBar.appendChild(progress);
+                            optionContainer.appendChild(optionLabel);
+                            optionContainer.appendChild(progressBar);
+
+                            if (option.isDone) {
+                                checkedOptionsContainer.appendChild(optionContainer);
+                            } else {
+                                cardBody.appendChild(optionContainer);
+                            }
+                        });
+
+                        const hr = document.createElement('hr');
+                        cardBody.appendChild(hr);
+                        cardBody.appendChild(checkedOptionsContainer);
+
+                        card.appendChild(cardBody);
+                        container.appendChild(card);
+                    });
+                } else {
+                    console.error('Failed to fetch voting data.');
+                }
+            })
+            .catch(error => console.error('Error fetching voting data:', error));
+    }
+
+    function toggleOption(option_id, isDone) {
+        fetch('/voting/toggle-option', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ option_id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Failed to update option status.');
+            } else {
+                fetchVotingResults();
+            }
+        })
+        .catch(error => console.error('Error updating option status:', error));
+    }
+});
+</script>
+</body>
+
+</html>

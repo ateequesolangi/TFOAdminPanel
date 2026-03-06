@@ -1,0 +1,97 @@
+<aside class="sidebar-wrapper" data-simplebar="true">
+    <div class="sidebar-header border-bottom border-light border-opacity-10">
+        <div class="d-flex align-items-center gap-2">
+            <img src="https://finalovers.cricket/wp-content/themes/finaloverscricket/assets/img/tfo_logo.png" class="logo-icon" alt="TFO Logo">
+            <h4 class="logo-text text-gradient mb-0">TFO</h4>
+        </div>
+    </div>
+
+    <ul class="metismenu mt-3" id="menu">
+        <li class="menu-label">Main Menu</li>
+        <li>
+            <a href="/dashboard" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="grid-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">Dashboard</div>
+            </a>
+        </li>
+
+        <li class="menu-label">Core Features</li>
+        <li>
+            <a href="/feedback" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="chatbubbles-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">Feedback</div>
+            </a>
+        </li>
+
+        <li>
+            <a href="/voting" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="checkbox-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">Voting</div>
+            </a>
+        </li>
+
+        <li>
+            <a href="/multiplayer" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="people-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">Multiplayer</div>
+            </a>
+        </li>
+
+        <li>
+            <a href="/adstadium" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="megaphone-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">Ad Stadium</div>
+            </a>
+        </li>
+
+        <li>
+            <a href="/review-bat-unlock" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="lock-open-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">Review Bat Unlock</div>
+            </a>
+        </li>
+
+        <li class="menu-label">Development</li>
+        <li>
+            <a href="/testprompt" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="terminal-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">Test Prompt</div>
+            </a>
+        </li>
+
+        <li>
+            <a href="/gpranking" class="sidebar-link">
+                <div class="parent-icon">
+                    <ion-icon name="trophy-outline" style="font-size: 1.2rem;"></ion-icon>
+                </div>
+                <div class="menu-title">GP Ranking</div>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<script>
+    // Highlight active sidebar link
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-link').forEach(function(link) {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>

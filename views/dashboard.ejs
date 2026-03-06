@@ -1,0 +1,129 @@
+<%- include('partials/head') %>
+<body class="animate-fade">
+    <div class="main-wrapper">
+        <%- include('partials/sidebar') %>
+
+        <div class="content-area">
+            <%- include('partials/header') %>
+
+            <div class="container-fluid pt-4">
+                <div class="row align-items-end mb-5 animate-fade">
+                    <div class="col">
+                        <p class="page-label mb-1">Overview</p>
+                        <h2 class="fw-bold mb-0">Welcome Back, <span class="text-gradient"><%= user.name %>!</span></h2>
+                    </div>
+                    <div class="col-auto">
+                        <div class="glass-card px-3 py-2 d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                <div style="width: 8px; height: 8px; background: var(--success); border-radius: 50%;"></div>
+                            </div>
+                            <span class="small fw-medium">System Online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="row g-4 mb-5 stagger-children">
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="glass-card glass-card-interactive p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="p-3 rounded-3" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-light);">
+                                    <ion-icon name="chatbubbles-outline" style="font-size: 1.5rem;"></ion-icon>
+                                </div>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.15);">+12%</span>
+                            </div>
+                            <h3 class="fw-bold mb-1">1,284</h3>
+                            <p class="text-muted small mb-0">Total Feedback</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="glass-card glass-card-interactive p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="p-3 rounded-3" style="background: rgba(6, 214, 160, 0.1); color: var(--secondary);">
+                                    <ion-icon name="checkmark-circle-outline" style="font-size: 1.5rem;"></ion-icon>
+                                </div>
+                                <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.15);">Active</span>
+                            </div>
+                            <h3 class="fw-bold mb-1">45</h3>
+                            <p class="text-muted small mb-0">Active Polls</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="glass-card glass-card-interactive p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="p-3 rounded-3" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                                    <ion-icon name="people-outline" style="font-size: 1.5rem;"></ion-icon>
+                                </div>
+                                <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.15);">-5%</span>
+                            </div>
+                            <h3 class="fw-bold mb-1">8,492</h3>
+                            <p class="text-muted small mb-0">Total Users</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="glass-card glass-card-interactive p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="p-3 rounded-3" style="background: rgba(244, 114, 182, 0.1); color: var(--accent);">
+                                    <ion-icon name="cloud-upload-outline" style="font-size: 1.5rem;"></ion-icon>
+                                </div>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.15);">Uptime</span>
+                            </div>
+                            <h3 class="fw-bold mb-1">99.9%</h3>
+                            <p class="text-muted small mb-0">Build Success</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Row -->
+                <div class="row g-4">
+                    <div class="col-12 col-lg-8">
+                        <div class="glass-card p-4" style="min-height: 400px;">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0">Feedback Trends</h5>
+                                <div class="dropdown">
+                                    <button class="btn btn-glass btn-sm px-3 rounded-pill" type="button" data-bs-toggle="dropdown">Last 30 Days</button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item small" href="#">Last 7 Days</a></li>
+                                        <li><a class="dropdown-item small" href="#">Last Month</a></li>
+                                        <li><a class="dropdown-item small" href="#">All Time</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="text-center py-5">
+                                <p class="text-muted">Chart visualization will be initialized here.</p>
+                                <a href="/feedback" class="btn btn-primary btn-sm rounded-pill px-4">View Analytics</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="glass-card p-4 h-100">
+                            <h5 class="fw-bold mb-4">Quick Actions</h5>
+                            <div class="d-grid gap-3">
+                                <a href="/voting" class="glass-card glass-card-interactive p-3 text-decoration-none d-flex align-items-center gap-3">
+                                    <div class="p-2 rounded-3" style="background: rgba(99,102,241,0.1); color: var(--primary-light);">
+                                        <ion-icon name="add-circle-outline" style="font-size: 1.2rem;"></ion-icon>
+                                    </div>
+                                    <span class="small fw-medium" style="color: var(--text-secondary);">Create New Poll</span>
+                                </a>
+                                <a href="/testprompt" class="glass-card glass-card-interactive p-3 text-decoration-none d-flex align-items-center gap-3">
+                                    <div class="p-2 rounded-3" style="background: rgba(6,214,160,0.1); color: var(--secondary);">
+                                        <ion-icon name="play-outline" style="font-size: 1.2rem;"></ion-icon>
+                                    </div>
+                                    <span class="small fw-medium" style="color: var(--text-secondary);">Test Unreal Build</span>
+                                </a>
+                                <a href="/feedback" class="glass-card glass-card-interactive p-3 text-decoration-none d-flex align-items-center gap-3">
+                                    <div class="p-2 rounded-3" style="background: rgba(244,114,182,0.1); color: var(--accent);">
+                                        <ion-icon name="cloud-download-outline" style="font-size: 1.2rem;"></ion-icon>
+                                    </div>
+                                    <span class="small fw-medium" style="color: var(--text-secondary);">Export CSV Report</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%- include('partials/footer') %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

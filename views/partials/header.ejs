@@ -1,0 +1,58 @@
+<header class="top-header">
+    <nav class="navbar navbar-expand gap-3 h-100">
+        <div class="toggle-icon d-lg-none" onclick="document.querySelector('.sidebar-wrapper').classList.toggle('show'); document.querySelector('.overlay').style.display = document.querySelector('.sidebar-wrapper').classList.contains('show') ? 'block' : 'none';">
+            <ion-icon name="menu-outline" style="font-size: 1.6rem; cursor: pointer; color: var(--text-secondary);"></ion-icon>
+        </div>
+
+        <div class="search-bar d-none d-md-flex align-items-center">
+            <ion-icon name="search-outline" class="text-muted me-2"></ion-icon>
+            <input type="text" placeholder="Search tasks, feedback...">
+        </div>
+
+        <div class="top-navbar-right ms-auto h-100 d-flex align-items-center">
+            <ul class="navbar-nav align-items-center gap-3">
+                <li class="nav-item">
+                    <a class="header-icon-btn" href="javascript:;">
+                        <ion-icon name="notifications-outline" style="font-size: 1.15rem;"></ion-icon>
+                        <span class="notification-dot"></span>
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="profile-btn dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown">
+                        <img src="https://t3.ftcdn.net/jpg/05/53/79/60/360_F_553796090_XHrE6R9jwmBJUMo9HKl41hyHJ5gqt9oz.jpg" class="user-img" alt="user">
+                        <div class="d-none d-sm-block text-start">
+                            <h6 class="mb-0 small fw-bold" style="color: var(--text-main);">SuperAdmin</h6>
+                        </div>
+                        <ion-icon name="chevron-down-outline" class="small text-muted"></ion-icon>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end animate-fade" style="min-width: 200px; margin-top: 10px;">
+                        <li class="px-3 py-2 border-bottom border-opacity-10 mb-2">
+                            <h6 class="mb-0 small fw-bold" style="color: var(--text-main);">TFO Admin</h6>
+                            <p class="mb-0" style="font-size: 0.7rem; color: var(--text-muted);">admin@tfo.com</p>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-3 rounded-3" href="javascript:;">
+                                <ion-icon name="person-outline"></ion-icon>
+                                <span class="small">My Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-3 rounded-3" href="javascript:;">
+                                <ion-icon name="settings-outline"></ion-icon>
+                                <span class="small">Settings</span>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-3 rounded-3 text-danger" href="/logout">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                                <span class="small fw-bold">Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

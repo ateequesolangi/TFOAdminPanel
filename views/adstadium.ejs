@@ -1,0 +1,217 @@
+<%- include('partials/head') %>
+
+<body>
+
+    <div class="main-wrapper">
+        <%- include('partials/sidebar') %>
+
+        <div class="content-area">
+            <%- include('partials/header') %>
+
+            <div class="container-fluid pt-4">
+                <div class="row align-items-center mb-4 animate-fade">
+                    <div class="col">
+                        <p class="page-label mb-1">Media Management</p>
+                        <h2 class="fw-bold mb-0">Ad <span class="text-gradient">Stadium</span></h2>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <ion-icon name="add-outline" style="font-size: 1.2rem;"></ion-icon>
+                            <span class="fw-bold small">Upload Ad</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 animate-fade">
+                    <div id="alertContainer"></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Sr#</th>
+                                    <th>Name of File</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>URL</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fileTableBody">
+                                <!-- Dynamic rows will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Modal -->
+            <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadModalLabel">Upload Ad Stadium</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="uploadForm" enctype="multipart/form-data">
+                                <div class="file-upload mb-3">
+                                    <div class="upload-icon"><i class="fa fa-file"></i></div>
+                                    <div class="upload-text">Drag and drop or browse your file</div>
+                                    <input type="file" id="stadiumFile" name="stadiumFile" accept=".jpg,.jpeg,.png,.gif,.mp4" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-upload me-2"></i>Upload</button>
+                            </form>
+                            <div class="upload-progress mt-3">
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="file-info">
+                                        <span class="file-name"></span>
+                                        <span class="file-size"></span>
+                                    </div>
+                                    <div class="upload-status"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%- include('partials/footer') %>
+        </div>
+
+        <a href="javaScript:;" class="back-to-top">
+            <ion-icon name="arrow-up-outline"></ion-icon>
+        </a>
+
+        <div class="overlay nav-toggle-icon"></div>
+    </div>
+
+    <!-- JS Files-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        $(document).ready(function () {
+            fetchFiles();
+
+            $('#uploadForm').on('submit', function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+
+                $('.upload-progress').show();
+                $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+
+                $.ajax({
+                    url: '/adstadium/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function () {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function (evt) {
+                            if (evt.lengthComputable) {
+                                const percentComplete = evt.loaded / evt.total * 100;
+                                $('.progress-bar').css('width', percentComplete + '%').attr('aria-valuenow', percentComplete).text(Math.round(percentComplete) + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            showAlert('success', 'Successfully uploaded ad stadium.');
+                            fetchFiles();
+                            $('#uploadModal').modal('hide');
+                        } else {
+                            showAlert('danger', 'Failed to upload. ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        showAlert('danger', 'Failed to upload. An error occurred.');
+                    },
+                    complete: function () {
+                        $('.upload-progress').hide();
+                        $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+                    }
+                });
+            });
+
+            function fetchFiles() {
+                $.ajax({
+                    url: '/adstadium/files',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            const files = response.files;
+                            let tableContent = '';
+                            files.forEach((file, index) => {
+                                tableContent += `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${file.name}</td>
+                                        <td><span class="badge" style="background: rgba(99,102,241,0.1); color: var(--primary-light);">${file.type}</span></td>
+                                        <td>${(file.size / 1024).toFixed(2)} KB</td>
+                                        <td><button class="btn btn-sm btn-glass copy-btn" data-url="${file.url}"><i class="fa fa-copy me-1"></i>Copy URL</button></td>
+                                        <td><button class="btn btn-sm btn-danger delete-btn" data-id="${file.id}"><i class="fa fa-trash me-1"></i>Delete</button></td>
+                                    </tr>
+                                `;
+                            });
+                            $('#fileTableBody').html(tableContent);
+                        } else {
+                            showAlert('danger', 'Failed to fetch files.');
+                        }
+                    },
+                    error: function () {
+                        showAlert('danger', 'Failed to fetch files. An error occurred.');
+                    }
+                });
+            }
+
+            $(document).on('click', '.delete-btn', function () {
+                const fileId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this file?')) {
+                    $.ajax({
+                        url: `/adstadium/delete/${fileId}`,
+                        type: 'DELETE',
+                        success: function (response) {
+                            if (response.success) {
+                                showAlert('success', 'File deleted successfully.');
+                                fetchFiles();
+                            } else {
+                                showAlert('danger', 'Failed to delete file.');
+                            }
+                        },
+                        error: function () {
+                            showAlert('danger', 'Failed to delete file. An error occurred.');
+                        }
+                    });
+                }
+            });
+
+            $(document).on('click', '.copy-btn', function () {
+                const url = $(this).data('url');
+                navigator.clipboard.writeText(url).then(() => {
+                    showAlert('success', 'URL copied to clipboard.');
+                }).catch(() => {
+                    showAlert('danger', 'Failed to copy URL.');
+                });
+            });
+
+            function showAlert(type, message) {
+                const alertHtml = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="fa ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+                $('#alertContainer').html(alertHtml);
+            }
+        });
+    </script>
+</body>
+</html>
