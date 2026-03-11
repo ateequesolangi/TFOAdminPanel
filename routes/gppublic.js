@@ -7,8 +7,9 @@ router.get('/', async (req, res) => {
   try {
     const { match_type = 'All', difficulty = 'All', time = 'Lifetime', format } = req.query;
 
-    // 🔹 Limit 100 records per fetch (no pagination)
+    // 🔹 Pagination: start = offset to begin from (default 0), limit = records per page
     const limit = 100;
+    const start = Math.max(0, parseInt(req.query.start) || 0);
 
     // Base query for GP aggregation
     let whereClause = "WHERE u.total_accumulated_gp > 0";
@@ -34,6 +35,7 @@ router.get('/', async (req, res) => {
     }
     // Lifetime → no time filter
 
+    // 🔹 Fetch limit + 1 to detect if more records exist beyond this page
     const query = `
   SELECT 
     u.user_id,
@@ -47,27 +49,35 @@ router.get('/', async (req, res) => {
   GROUP BY u.user_id, u.user_name, u.user_pic
   HAVING total_gp > 0
   ORDER BY total_gp DESC
-  LIMIT ?
+  LIMIT ? OFFSET ?
 `;
 
-    queryParams.push(limit);
+    queryParams.push(limit + 1, start);
 
     const [results] = await db.query(query, queryParams);
+
+    // 🔹 Check if there are more records beyond this page
+    const hasMore = results.length > limit;
+    const players = hasMore ? results.slice(0, limit) : results;
 
     // 🔹 API / JSON response (for Unreal)
     if (format === 'json') {
       return res.json({
         success: true,
-        totalPlayers: results.length,
+        totalPlayers: players.length,
+        start: start,
+        limit: limit,
+        hasMore: hasMore,
+        nextStart: hasMore ? start + limit : null,
         filters: { match_type, difficulty, time },
-        data: results
+        data: players
       });
     }
 
     // 🔹 EJS render (for web dashboard)
     res.render('gpranking', {
       title: 'GP Ranking',
-      players: results,
+      players: players,
       filters: { match_type, difficulty, time }
     });
 
