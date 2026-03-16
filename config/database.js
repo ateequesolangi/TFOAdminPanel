@@ -1,17 +1,19 @@
 const path = require('path');
 
 const runtimeRoot = path.resolve(__dirname, '..').replace(/\\/g, '/');
-const appEnv = (process.env.APP_ENV || process.env.NODE_ENV || process.env.PASSENGER_APP_ENV || '').toLowerCase();
 const appUrl = (process.env.APP_URL || '').toLowerCase();
+const host = (process.env.HOSTNAME || '').toLowerCase();
 
 const isLocalRuntime =
-    ['local', 'development', 'dev', 'test'].includes(appEnv) ||
+    process.platform === 'win32' ||
+    runtimeRoot.includes('/users/') ||
+    runtimeRoot[1] === ':' ||
     appUrl.includes('localhost') ||
-    process.platform === 'win32';
+    host.includes('localhost');
 
 const isProductionRuntime =
-    appEnv === 'production' ||
-    runtimeRoot.startsWith('/home/halljyqm/admin.finalovers.cricket');
+    runtimeRoot.startsWith('/home/halljyqm/admin.finalovers.cricket') ||
+    appUrl.includes('admin.finalovers.cricket');
 
 const useProductionDatabase = isProductionRuntime && !isLocalRuntime;
 
