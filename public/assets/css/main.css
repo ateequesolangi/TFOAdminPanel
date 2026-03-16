@@ -1106,21 +1106,19 @@ h6 { font-size: 0.875rem; }
 
 /* Action icons on cards */
 .card-actions {
-    position: absolute;
-    top: 12px;
-    left: 12px;
     display: flex;
     gap: 8px;
     z-index: 10;
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateY(-5px);
     transition: var(--transition);
     pointer-events: none;
+    margin-bottom: 0.5rem;
 }
 
 .glass-card:hover .card-actions {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
     pointer-events: all;
 }
 
