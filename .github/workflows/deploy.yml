@@ -4,44 +4,48 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+  workflow_dispatch:
 
 concurrency:
   group: production-deployment
-  cancel-in-progress: true # Stops old deployments if a new one is triggered
+  cancel-in-progress: true
 
 jobs:
   deploy:
-    name: FTP Deployment
+    name: FTPS Deployment
     runs-on: ubuntu-latest
-    timeout-minutes: 15 # Prevents hanging deployments
-    
+    timeout-minutes: 15
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Required to accurately determine changed files for incremental sync
-          
+          fetch-depth: 0
+
       - name: Setup Passenger Restart Marker
         run: |
           mkdir -p tmp
           date > tmp/restart.txt
           echo "Passenger restart marker updated."
 
-      - name: Deploy via FTP
+      - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ftp.hallarazad.com
+          # Namecheap shared hosting typically expects explicit FTPS on port 21.
+          # Override with repo secrets if your hosting panel shows different values.
+          server: ${{ secrets.FTP_SERVER != '' && secrets.FTP_SERVER || 'ftp.hallarazad.com' }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # If your FTP user's root is the entire cPanel account, use this:
-          server-dir: /admin.finalovers.cricket/
-          # If your FTP user is specifically restricted to the admin.finalovers.cricket folder, change the above to:
-          # server-dir: /
-          
-          timeout: 120000 # 2 minute timeout for FTP transfers
-          
-          # Files and folders to exclude from upload
+          protocol: ${{ secrets.FTP_PROTOCOL != '' && secrets.FTP_PROTOCOL || 'ftps' }}
+          port: ${{ secrets.FTP_PORT != '' && secrets.FTP_PORT || 21 }}
+          security: loose
+          # This FTP account already opens inside the admin.finalovers.cricket docroot.
+          # Override only if the hosting panel shows a different starting directory.
+          server-dir: ${{ secrets.FTP_SERVER_DIR != '' && secrets.FTP_SERVER_DIR || '/' }}
+          local-dir: ./
+          log-level: verbose
+          timeout: 120000
+
           exclude: |
             **/.git*
             **/.git*/**
