@@ -29,7 +29,7 @@ jobs:
           echo "Passenger restart marker updated."
 
       - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.8
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ftp.hallarazad.com
           username: ${{ secrets.FTP_USERNAME }}
