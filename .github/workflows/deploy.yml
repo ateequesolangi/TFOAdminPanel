@@ -1,0 +1,55 @@
+name: Deploy Admin Panel to Namecheap cPanel
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: true # Stops old deployments if a new one is triggered
+
+jobs:
+  deploy:
+    name: FTP Deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15 # Prevents hanging deployments
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to accurately determine changed files for incremental sync
+          
+      - name: Setup Passenger Restart Marker
+        run: |
+          mkdir -p tmp
+          date > tmp/restart.txt
+          echo "Passenger restart marker updated."
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.8
+        with:
+          server: ftp.hallarazad.com
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # If your FTP user's root is the entire cPanel account, use this:
+          server-dir: /admin.finalovers.cricket/
+          # If your FTP user is specifically restricted to the admin.finalovers.cricket folder, change the above to:
+          # server-dir: /
+          
+          timeout: 120000 # 2 minute timeout for FTP transfers
+          
+          # Files and folders to exclude from upload
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/node_modules/**
+            **/.env
+            **/*.log
+            **/error_log
+            **/*.zip
+            README.md
+            .env.example
