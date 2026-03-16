@@ -231,6 +231,7 @@ h6 { font-size: 0.875rem; }
     width: auto;
     filter: drop-shadow(0 0 10px var(--primary-glow));
     transition: var(--transition);
+    margin: 1rem 0;
 }
 
 .sidebar-header .logo-text {
