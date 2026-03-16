@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const db = require('../config/database'); // Ensure this points to your database configuration
+const db = require('../config/database');
 const router = express.Router();
 
 // Set up the storage engine
@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname);
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
 
@@ -41,53 +41,54 @@ router.get('/', (req, res) => {
 
 // Route to handle file upload
 router.post('/upload', (req, res) => {
-    upload(req, res, function (err) {
+    upload(req, res, async function (err) {
         if (err) {
             return res.json({ success: false, message: err.message });
         }
+        if (!req.file) {
+            return res.json({ success: false, message: 'Please select a file to upload.' });
+        }
 
-        const filePath = path.join('public', 'adstadium', req.file.originalname);
-        const fileUrl = path.join('/adstadium', req.file.originalname);
+        const fileName = req.file.filename;
+        const fileUrl = `/adstadium/${fileName}`;
 
-        // Save file details to database
-        const query = 'INSERT INTO adstadium_files (name, type, size, url) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE size = ?, url = ?';
-        const values = [req.file.originalname, req.file.mimetype, req.file.size, fileUrl, req.file.size, fileUrl];
-
-        db.query(query, values, (error) => {
-            if (error) {
-                return res.json({ success: false, message: 'Database query failed.' });
-            }
+        try {
+            const query = 'INSERT INTO adstadium_files (name, type, size, url) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE size = ?, url = ?';
+            const values = [fileName, req.file.mimetype, req.file.size, fileUrl, req.file.size, fileUrl];
+            await db.query(query, values);
             res.json({ success: true, message: 'File uploaded successfully.' });
-        });
+        } catch (error) {
+            console.error('Upload Error:', error);
+            res.json({ success: false, message: 'Database query failed.' });
+        }
     });
 });
 
 // Route to fetch existing files
-router.get('/files', (req, res) => {
-    db.query('SELECT * FROM adstadium_files', (error, results) => {
-        if (error) {
-            return res.json({ success: false, message: 'Database query failed.' });
-        }
-        const baseUrl = 'https://admin.finalovers.cricket';
+router.get('/files', async (req, res) => {
+    try {
+        const [results] = await db.query('SELECT * FROM adstadium_files ORDER BY id DESC');
         const files = results.map(file => ({
             id: file.id,
             name: file.name,
             type: file.type,
             size: file.size,
-            url: `${baseUrl}/public/adstadium/${file.name}`
+            url: file.url
         }));
         res.json({ success: true, files: files });
-    });
+    } catch (error) {
+        console.error('Fetch Files Error:', error);
+        res.json({ success: false, message: 'Database query failed.' });
+    }
 });
 
-
 // Route to delete a file
-router.delete('/delete/:id', (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
     const fileId = req.params.id;
 
-    const query = 'SELECT * FROM adstadium_files WHERE id = ?';
-    db.query(query, [fileId], (error, results) => {
-        if (error || results.length === 0) {
+    try {
+        const [results] = await db.query('SELECT * FROM adstadium_files WHERE id = ?', [fileId]);
+        if (results.length === 0) {
             return res.json({ success: false, message: 'File not found.' });
         }
 
@@ -95,21 +96,19 @@ router.delete('/delete/:id', (req, res) => {
         const filePath = path.join(__dirname, '..', 'public', 'adstadium', file.name);
 
         // Delete the file from the file system
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                return res.json({ success: false, message: 'Failed to delete file from server.' });
-            }
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
 
-            // Delete the file record from the database
-            const deleteQuery = 'DELETE FROM adstadium_files WHERE id = ?';
-            db.query(deleteQuery, [fileId], (error) => {
-                if (error) {
-                    return res.json({ success: false, message: 'Failed to delete file from database.' });
-                }
-                res.json({ success: true, message: 'File deleted successfully.' });
-            });
-        });
-    });
+        // Delete the file record from the database
+        await db.query('DELETE FROM adstadium_files WHERE id = ?', [fileId]);
+        res.json({ success: true, message: 'File deleted successfully.' });
+    } catch (error) {
+        console.error('Delete Error:', error);
+        res.json({ success: false, message: 'Failed to delete the file.' });
+    }
 });
+
+module.exports = router;
 
 module.exports = router;

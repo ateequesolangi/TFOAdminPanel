@@ -216,16 +216,13 @@ h6 { font-size: 0.875rem; }
 }
 
 .sidebar-header {
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100px;
 }
 
 .sidebar-header .logo-icon {
-    height: 70px;
+    height: 55px;
     width: auto;
     filter: drop-shadow(0 0 10px var(--primary-glow));
     transition: var(--transition);
@@ -1075,8 +1072,8 @@ h6 { font-size: 0.875rem; }
 /* Top-right info badges on feedback cards */
 .top-right-info {
     position: absolute;
-    top: 10px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -1089,52 +1086,42 @@ h6 { font-size: 0.875rem; }
 .total-responses,
 .average-rating,
 .version-name {
-    background: rgba(15, 23, 42, 0.8); /* Darker backdrop for better contrast */
-    padding: 4px 10px;
-    border-radius: var(--radius-md);
+    background: var(--bg-surface-2);
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-weight: 600;
-    font-size: 0.65rem;
-    color: var(--text-main);
+    gap: 4px;
+    font-weight: 500;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
     border: 1px solid var(--border-glass);
-    backdrop-filter: blur(4px);
 }
 
-.action-bar {
-    height: 32px;
-    gap: 8px;
-}
-
+/* Action icons on cards */
 .edit-icon,
 .delete-icon {
-    position: static !important;
+    position: absolute;
     cursor: pointer;
-    width: 28px;
-    height: 28px;
-    display: none !important; /* Managed by JS hover */
+    width: 30px;
+    height: 30px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-sm);
+    border-radius: 50%;
     background: var(--bg-surface-2);
     border: 1px solid var(--border-glass);
     color: var(--text-muted);
-    transition: var(--transition-fast);
-    font-size: 0.7rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    font-size: 0.75rem;
 }
 
-.edit-icon:hover { 
-    background: var(--primary);
-    color: white !important;
-    border-color: var(--primary);
-}
+.edit-icon { top: 10px; right: 10px; }
+.delete-icon { top: 10px; right: 45px; }
 
-.delete-icon:hover { 
-    background: var(--danger);
-    color: white !important;
-    border-color: var(--danger);
-}
+.edit-icon:hover { color: var(--primary-light); border-color: var(--primary); }
+.delete-icon:hover { color: var(--danger); border-color: var(--danger); }
 
 /* Loading spinner */
 #spinner {
@@ -1474,20 +1461,6 @@ hr {
 .btn-light:hover {
     background: var(--bg-surface);
     color: var(--text-main);
-}
-
-.btn-glass-danger {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    transition: var(--transition);
-}
-
-.btn-glass-danger:hover {
-    background: #ef4444;
-    color: white;
-    border-color: #ef4444;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
 }
 
 /* Prompt display */
