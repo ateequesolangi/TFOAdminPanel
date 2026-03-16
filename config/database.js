@@ -1,19 +1,22 @@
-const mysql = require('mysql2/promise');
+const path = require('path');
 
-const db = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || '',
-    database: process.env.DB_NAME || 'halljyqm_tfoprofile'
-});
+const runtimeRoot = path.resolve(__dirname, '..').replace(/\\/g, '/');
+const appEnv = (process.env.APP_ENV || process.env.NODE_ENV || process.env.PASSENGER_APP_ENV || '').toLowerCase();
+const appUrl = (process.env.APP_URL || '').toLowerCase();
 
-db.getConnection()
-    .then(conn => {
-        console.log('Connected to MySQL Database.');
-        conn.release();
-    })
-    .catch(err => {
-        console.error('Unable to connect to the database:', err);
-    });
+const isLocalRuntime =
+    ['local', 'development', 'dev', 'test'].includes(appEnv) ||
+    appUrl.includes('localhost') ||
+    process.platform === 'win32';
 
-module.exports = db;
+const isProductionRuntime =
+    appEnv === 'production' ||
+    runtimeRoot.startsWith('/home/halljyqm/admin.finalovers.cricket');
+
+const useProductionDatabase = isProductionRuntime && !isLocalRuntime;
+
+console.log(`Using ${useProductionDatabase ? 'productiondb.js' : 'localdb.js'} database configuration.`);
+
+module.exports = useProductionDatabase
+    ? require('./productiondb')
+    : require('./localdb');
