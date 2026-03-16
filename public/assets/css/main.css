@@ -1126,9 +1126,12 @@ h6 { font-size: 0.875rem; }
 .delete-icon {
     width: 32px;
     height: 32px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(8px);
