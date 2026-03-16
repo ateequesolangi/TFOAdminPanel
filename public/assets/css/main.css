@@ -1506,3 +1506,36 @@ hr {
     color: var(--text-secondary);
     font-size: 0.9rem;
 }
+
+/* Feedback card action alignment refinements */
+.card .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    margin: 0 0 0.85rem;
+}
+
+.card .card-actions .edit-icon,
+.card .card-actions .delete-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    padding: 0;
+    line-height: 1;
+    font-size: 0.9rem;
+}
+
+.card .card-actions .edit-icon::before,
+.card .card-actions .delete-icon::before {
+    display: block;
+    line-height: 1;
+}
+
+.card .card-actions .edit-icon:hover,
+.card .card-actions .delete-icon:hover {
+    transform: translateY(-1px) scale(1.05);
+}
