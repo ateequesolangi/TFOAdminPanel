@@ -649,39 +649,32 @@ function renderFeedbackCharts(questions) {
     topRightDiv.appendChild(versionNameDiv);
 
     const deleteButton = document.createElement('i');
-    deleteButton.className = 'fa fa-times delete-icon me-2'; // Added margin-right
-    deleteButton.style.position = 'static'; // Remove absolute positioning
-    deleteButton.addEventListener('click', () => confirmDeleteQuestion(question.question_id));
+    deleteButton.className = 'fa fa-trash delete-icon';
+    deleteButton.title = 'Delete Question';
+    deleteButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      confirmDeleteQuestion(question.question_id);
+    });
 
     const editButton = document.createElement('i');
     editButton.className = 'fa fa-pencil edit-icon';
-    editButton.style.position = 'static'; // Remove absolute positioning
-    editButton.style.display = 'none'; // Will be handled by row hover ideally, but kept it for now
+    editButton.title = 'Edit Question';
     editButton.addEventListener('click', (e) => {
       e.stopPropagation();
       openEditModal(question);
     });
 
-    const actionRow = document.createElement('div');
-    actionRow.className = 'd-flex align-items-center mt-2 action-bar';
-    actionRow.appendChild(editButton);
-    actionRow.appendChild(deleteButton);
+    const actionContainer = document.createElement('div');
+    actionContainer.className = 'card-actions';
+    actionContainer.appendChild(editButton);
+    actionContainer.appendChild(deleteButton);
 
     cardBodyDiv.appendChild(titleContainer);
-    cardBodyDiv.appendChild(actionRow); // Added action bar below title
     cardBodyDiv.appendChild(chartContainer);
     cardDiv.appendChild(topRightDiv);
+    cardDiv.appendChild(actionContainer);
     cardDiv.appendChild(cardBodyDiv);
     colDiv.appendChild(cardDiv);
-
-    cardDiv.addEventListener('mouseenter', () => {
-      editButton.style.setProperty('display', 'flex', 'important');
-      deleteButton.style.setProperty('display', 'flex', 'important');
-    });
-    cardDiv.addEventListener('mouseleave', () => {
-      editButton.style.setProperty('display', 'none', 'important');
-      deleteButton.style.setProperty('display', 'none', 'important');
-    });
 
     const ctx = canvas.getContext('2d');
     let chartConfig = {};
