@@ -222,7 +222,8 @@ h6 { font-size: 0.875rem; }
 }
 
 .sidebar-header .logo-icon {
-    width: 36px;
+    height: 48px;
+    width: auto;
     filter: drop-shadow(0 0 10px var(--primary-glow));
     transition: var(--transition);
 }
@@ -1071,8 +1072,8 @@ h6 { font-size: 0.875rem; }
 /* Top-right info badges on feedback cards */
 .top-right-info {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 10px;
+    right: 12px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -1085,42 +1086,52 @@ h6 { font-size: 0.875rem; }
 .total-responses,
 .average-rating,
 .version-name {
-    background: var(--bg-surface-2);
-    padding: 3px 8px;
-    border-radius: var(--radius-pill);
+    background: rgba(15, 23, 42, 0.8); /* Darker backdrop for better contrast */
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-weight: 500;
-    font-size: 0.7rem;
-    color: var(--text-secondary);
+    gap: 6px;
+    font-weight: 600;
+    font-size: 0.65rem;
+    color: var(--text-main);
     border: 1px solid var(--border-glass);
+    backdrop-filter: blur(4px);
 }
 
-/* Action icons on cards */
+.action-bar {
+    height: 32px;
+    gap: 8px;
+}
+
 .edit-icon,
 .delete-icon {
-    position: absolute;
+    position: static !important;
     cursor: pointer;
-    width: 30px;
-    height: 30px;
-    display: flex;
+    width: 28px;
+    height: 28px;
+    display: none !important; /* Managed by JS hover */
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: var(--radius-sm);
     background: var(--bg-surface-2);
     border: 1px solid var(--border-glass);
     color: var(--text-muted);
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    font-size: 0.75rem;
+    transition: var(--transition-fast);
+    font-size: 0.7rem;
 }
 
-.edit-icon { top: 10px; right: 10px; }
-.delete-icon { top: 10px; right: 45px; }
+.edit-icon:hover { 
+    background: var(--primary);
+    color: white !important;
+    border-color: var(--primary);
+}
 
-.edit-icon:hover { color: var(--primary-light); border-color: var(--primary); }
-.delete-icon:hover { color: var(--danger); border-color: var(--danger); }
+.delete-icon:hover { 
+    background: var(--danger);
+    color: white !important;
+    border-color: var(--danger);
+}
 
 /* Loading spinner */
 #spinner {
@@ -1460,6 +1471,20 @@ hr {
 .btn-light:hover {
     background: var(--bg-surface);
     color: var(--text-main);
+}
+
+.btn-glass-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    transition: var(--transition);
+}
+
+.btn-glass-danger:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
 }
 
 /* Prompt display */

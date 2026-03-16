@@ -59,8 +59,8 @@
                         <p class="page-label mb-1">Data Analytics</p>
                         <h2 class="fw-bold mb-0">Feedback <span class="text-gradient">Insights</span></h2>
                     </div>
-                    <div class="col-auto d-flex gap-2">
-                         <button type="button" class="btn btn-glass d-flex align-items-center gap-2 px-3 py-2 rounded-pill" id="filterButton">
+                    <div class="col-auto d-flex gap-2 align-items-center">
+                        <button type="button" class="btn btn-glass d-flex align-items-center gap-2 px-3 py-2 rounded-pill" id="filterButton">
                             <ion-icon name="filter-outline" style="color: var(--primary-light);"></ion-icon>
                             <span class="small fw-bold">Filters</span>
                             <span class="badge bg-primary rounded-pill filter-count" style="font-size: 0.6rem;">0</span>
@@ -69,25 +69,18 @@
                             <ion-icon name="swap-vertical-outline" style="color: var(--secondary);"></ion-icon>
                             <span class="small fw-bold">Sort</span>
                         </button>
-                        <div class="dropdown">
-                            <button class="btn btn-glass px-3 py-2 rounded-pill" type="button" data-bs-toggle="dropdown">
-                                <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end animate-fade">
-                                <li>
-                                    <button class="dropdown-item d-flex align-items-center gap-3 py-2" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
-                                        <ion-icon name="add-circle-outline" style="color: var(--primary-light);"></ion-icon>
-                                        <span class="small">Create Question</span>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger" id="deleteAllFeedbackBtn">
-                                        <ion-icon name="trash-outline"></ion-icon>
-                                        <span class="small fw-bold">Delete All</span>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+
+                        <div class="vr mx-1" style="opacity: 0.1; height: 20px;"></div>
+
+                        <button class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
+                            <ion-icon name="add-circle-outline"></ion-icon>
+                            <span class="small fw-bold">Create Question</span>
+                        </button>
+
+                        <button class="btn btn-glass-danger d-flex align-items-center gap-2 px-3 py-2 rounded-pill" id="deleteAllFeedbackBtn">
+                            <ion-icon name="trash-outline"></ion-icon>
+                            <span class="small fw-bold">Delete All</span>
+                        </button>
                     </div>
                 </div>
 
@@ -243,178 +236,7 @@
           </div>
         </div>
 
-          <!-- Create Question Modal -->
-          <div class="modal fade" id="createQuestionModal" tabindex="-1" aria-labelledby="createQuestionModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-md modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="createQuestionModalLabel">Create Feedback Question</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form id="createQuestionForm" action="/feedback/create" method="POST">
-                    <div class="mb-3">
-                      <label for="questionText" class="form-label">Question Text</label>
-                      <input type="text" class="form-control" id="questionText" name="question_text" required>
-                    </div>
-                    <div class="mb-3">
-                      <label for="questionType" class="form-label">Question Type</label>
-                      <select class="form-select" id="questionType" name="question_type" required>
-                        <option value="yesno">Yes/No</option>
-                        <option value="rating">Rating</option>
-                        <option value="emoji">Emoji</option>
-                      </select>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="mb-3">
-                          <label for="isActive" class="form-label">Is Active</label>
-                          <select class="form-select" id="isActive" name="is_active" required>
-                            <option value="1" selected>Yes</option>
-                            <option value="0">No</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="mb-3">
-                          <label for="versionName" class="form-label">Version Name</label>
-                          <input type="text" class="form-control" id="versionName" name="version_name">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-4">
-                        <div class="mb-3">
-                          <label for="mode" class="form-label">Mode</label>
-                          <select class="form-select" id="mode" name="mode" required>
-                            <option value="All" selected>All</option>
-                            <option value="QuickMatch">QuickMatch</option>
-                            <option value="T20">T20</option>
-                            <option value="ODI">ODI</option>
-                            <option value="Practice">Practice</option>
-                            <option value="LocalMultiplayer">LocalMultiplayer</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="mb-3">
-                          <label for="difficulty" class="form-label">Difficulty</label>
-                          <select class="form-select" id="difficulty" name="difficulty" required>
-                            <option value="All" selected>All</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Normal">Normal</option>
-                            <option value="Hard">Hard</option>
-                            <option value="Expert">Expert</option>
-                            <option value="Pro">Pro</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="mb-3">
-                          <label for="stadium" class="form-label">Stadium</label>
-                          <select class="form-select" id="stadium" name="stadium" required>
-                            <option value="All" selected>All</option>
-                            <option value="Habibi">Habibi</option>
-                            <option value="Twilight">Twilight</option>
-                            <option value="Lords">Lords</option>
-                            <option value="Oasis">Oasis</option>
-                            <option value="Newlands">Newlands</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="modal-footer px-0 pb-0">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="submit" class="btn btn-primary">Insert</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
 
-            <!-- Edit Question Modal -->
-          <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-md modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="editQuestionModalLabel">Edit Feedback Question</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form id="editQuestionForm">
-                    <input type="hidden" id="editQuestionId" name="question_id">
-                    <div class="mb-3">
-                      <label for="editQuestionText" class="form-label">Question Text</label>
-                      <input type="text" class="form-control" id="editQuestionText" name="question_text" required>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editQuestionType" class="form-label">Question Type</label>
-                      <select class="form-select" id="editQuestionType" name="question_type" required>
-                        <option value="yesno">Yes/No</option>
-                        <option value="rating">Rating</option>
-                        <option value="emoji">Emoji</option>
-                      </select>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editIsActive" class="form-label">Is Active</label>
-                      <select class="form-select" id="editIsActive" name="is_active" required>
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                      </select>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-4">
-                        <div class="mb-3">
-                          <label for="editMode" class="form-label">Mode</label>
-                          <select class="form-select" id="editMode" name="mode" required>
-                            <option value="All">All</option>
-                            <option value="QuickMatch">QuickMatch</option>
-                            <option value="T20">T20</option>
-                            <option value="ODI">ODI</option>
-                            <option value="Practice">Practice</option>
-                            <option value="LocalMultiplayer">LocalMultiplayer</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="mb-3">
-                          <label for="editDifficulty" class="form-label">Difficulty</label>
-                          <select class="form-select" id="editDifficulty" name="difficulty" required>
-                            <option value="All">All</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Normal">Normal</option>
-                            <option value="Hard">Hard</option>
-                            <option value="Expert">Expert</option>
-                            <option value="Pro">Pro</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="mb-3">
-                          <label for="editStadium" class="form-label">Stadium</label>
-                          <select class="form-select" id="editStadium" name="stadium" required>
-                            <option value="All">All</option>
-                            <option value="Habibi">Habibi</option>
-                            <option value="Twilight">Twilight</option>
-                            <option value="Lords">Lords</option>
-                            <option value="Oasis">Oasis</option>
-                            <option value="Newlands">Newlands</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="modal-footer px-0 pb-0">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <%- include('partials/footer') %>
 
@@ -424,6 +246,177 @@
 
             <div class="overlay nav-toggle-icon"></div>
 
+    </div>
+
+    <!-- Create Question Modal -->
+    <div class="modal fade" id="createQuestionModal" tabindex="-1" aria-labelledby="createQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createQuestionModalLabel">Create Feedback Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createQuestionForm" action="/feedback/create" method="POST">
+                        <div class="mb-3">
+                            <label for="questionText" class="form-label">Question Text</label>
+                            <input type="text" class="form-control" id="questionText" name="question_text" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="questionType" class="form-label">Question Type</label>
+                            <select class="form-select" id="questionType" name="question_type" required>
+                                <option value="yesno">Yes/No</option>
+                                <option value="rating">Rating</option>
+                                <option value="emoji">Emoji</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="isActive" class="form-label">Is Active</label>
+                                    <select class="form-select" id="isActive" name="is_active" required>
+                                        <option value="1" selected>Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="versionName" class="form-label">Version Name</label>
+                                    <input type="text" class="form-control" id="versionName" name="version_name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="mode" class="form-label">Mode</label>
+                                    <select class="form-select" id="mode" name="mode" required>
+                                        <option value="All" selected>All</option>
+                                        <option value="QuickMatch">QuickMatch</option>
+                                        <option value="T20">T20</option>
+                                        <option value="ODI">ODI</option>
+                                        <option value="Practice">Practice</option>
+                                        <option value="LocalMultiplayer">LocalMultiplayer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="difficulty" class="form-label">Difficulty</label>
+                                    <select class="form-select" id="difficulty" name="difficulty" required>
+                                        <option value="All" selected>All</option>
+                                        <option value="Easy">Easy</option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="Hard">Hard</option>
+                                        <option value="Expert">Expert</option>
+                                        <option value="Pro">Pro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="stadium" class="form-label">Stadium</label>
+                                    <select class="form-select" id="stadium" name="stadium" required>
+                                        <option value="All" selected>All</option>
+                                        <option value="Habibi">Habibi</option>
+                                        <option value="Twilight">Twilight</option>
+                                        <option value="Lords">Lords</option>
+                                        <option value="Oasis">Oasis</option>
+                                        <option value="Newlands">Newlands</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer px-0 pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Insert</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Question Modal -->
+    <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editQuestionModalLabel">Edit Feedback Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editQuestionForm">
+                        <input type="hidden" id="editQuestionId" name="question_id">
+                        <div class="mb-3">
+                            <label for="editQuestionText" class="form-label">Question Text</label>
+                            <input type="text" class="form-control" id="editQuestionText" name="question_text" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editQuestionType" class="form-label">Question Type</label>
+                            <select class="form-select" id="editQuestionType" name="question_type" required>
+                                <option value="yesno">Yes/No</option>
+                                <option value="rating">Rating</option>
+                                <option value="emoji">Emoji</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editIsActive" class="form-label">Is Active</label>
+                            <select class="form-select" id="editIsActive" name="is_active" required>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="editMode" class="form-label">Mode</label>
+                                    <select class="form-select" id="editMode" name="mode" required>
+                                        <option value="All">All</option>
+                                        <option value="QuickMatch">QuickMatch</option>
+                                        <option value="T20">T20</option>
+                                        <option value="ODI">ODI</option>
+                                        <option value="Practice">Practice</option>
+                                        <option value="LocalMultiplayer">LocalMultiplayer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="editDifficulty" class="form-label">Difficulty</label>
+                                    <select class="form-select" id="editDifficulty" name="difficulty" required>
+                                        <option value="All">All</option>
+                                        <option value="Easy">Easy</option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="Hard">Hard</option>
+                                        <option value="Expert">Expert</option>
+                                        <option value="Pro">Pro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="editStadium" class="form-label">Stadium</label>
+                                    <select class="form-select" id="editStadium" name="stadium" required>
+                                        <option value="All">All</option>
+                                        <option value="Habibi">Habibi</option>
+                                        <option value="Twilight">Twilight</option>
+                                        <option value="Lords">Lords</option>
+                                        <option value="Oasis">Oasis</option>
+                                        <option value="Newlands">Newlands</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer px-0 pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- JS Files-->
@@ -445,7 +438,35 @@
   setupFilterUI();
   document.getElementById('deleteAllFeedbackBtn').addEventListener('click', deleteAllFeedback);
   document.getElementById('editQuestionForm').addEventListener('submit', handleEditFormSubmit);
+  document.getElementById('createQuestionForm').addEventListener('submit', handleCreateFormSubmit);
 });
+
+function handleCreateFormSubmit(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData.entries());
+
+  fetch('/feedback/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showToast('Feedback question created successfully.');
+        bootstrap.Modal.getInstance(document.getElementById('createQuestionModal')).hide();
+        this.reset();
+        fetchDataAndRender();
+      } else {
+        showToast('Failed to create feedback question. Please try again.', 'danger');
+      }
+    })
+    .catch(error => {
+      console.error('Error creating feedback question:', error);
+      showToast('An error occurred: ' + error.message, 'danger');
+    });
+}
 
 function setupFilterUI() {
   const filterButton = document.getElementById('filterButton');
@@ -609,8 +630,12 @@ function renderFeedbackCharts(questions) {
       topRightDiv.appendChild(averageRatingDiv);
     }
 
+    const titleContainer = document.createElement('div');
+    titleContainer.className = 'pe-5 mb-2'; // Give space for top-right badges
+    titleContainer.appendChild(title);
+
     const chartContainer = document.createElement('div');
-    chartContainer.className = 'chart-container flex-grow-1 mt-3';
+    chartContainer.className = 'chart-container flex-grow-1 mt-4'; // Added more margin top
     chartContainer.style.position = 'relative';
     chartContainer.style.minHeight = '250px';
 
@@ -624,29 +649,38 @@ function renderFeedbackCharts(questions) {
     topRightDiv.appendChild(versionNameDiv);
 
     const deleteButton = document.createElement('i');
-    deleteButton.className = 'fa fa-times delete-icon';
+    deleteButton.className = 'fa fa-times delete-icon me-2'; // Added margin-right
+    deleteButton.style.position = 'static'; // Remove absolute positioning
     deleteButton.addEventListener('click', () => confirmDeleteQuestion(question.question_id));
-
-    cardBodyDiv.appendChild(title);
-    cardBodyDiv.appendChild(chartContainer);
-    cardDiv.appendChild(topRightDiv);
-    cardDiv.appendChild(cardBodyDiv);
-    cardDiv.appendChild(deleteButton);
-    colDiv.appendChild(cardDiv);
 
     const editButton = document.createElement('i');
     editButton.className = 'fa fa-pencil edit-icon';
-    editButton.style.display = 'none';
+    editButton.style.position = 'static'; // Remove absolute positioning
+    editButton.style.display = 'none'; // Will be handled by row hover ideally, but kept it for now
     editButton.addEventListener('click', (e) => {
       e.stopPropagation();
       openEditModal(question);
     });
-    cardDiv.appendChild(editButton);
+
+    const actionRow = document.createElement('div');
+    actionRow.className = 'd-flex align-items-center mt-2 action-bar';
+    actionRow.appendChild(editButton);
+    actionRow.appendChild(deleteButton);
+
+    cardBodyDiv.appendChild(titleContainer);
+    cardBodyDiv.appendChild(actionRow); // Added action bar below title
+    cardBodyDiv.appendChild(chartContainer);
+    cardDiv.appendChild(topRightDiv);
+    cardDiv.appendChild(cardBodyDiv);
+    colDiv.appendChild(cardDiv);
+
     cardDiv.addEventListener('mouseenter', () => {
-      editButton.style.display = 'block';
+      editButton.style.setProperty('display', 'flex', 'important');
+      deleteButton.style.setProperty('display', 'flex', 'important');
     });
     cardDiv.addEventListener('mouseleave', () => {
-      editButton.style.display = 'none';
+      editButton.style.setProperty('display', 'none', 'important');
+      deleteButton.style.setProperty('display', 'none', 'important');
     });
 
     const ctx = canvas.getContext('2d');
@@ -833,21 +867,27 @@ function confirmDeleteQuestion(questionId) {
 }
 
 function deleteAllFeedback() {
-  if (confirm('Are you sure you want to delete all feedback questions and their responses?')) {
-    fetch('/feedback/delete-all', { method: 'DELETE' })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          showToast('All feedback questions and their responses have been deleted.');
-          fetchDataAndRender();
-        } else {
-          showToast('Failed to delete all feedback questions. Please try again.', 'danger');
-        }
-      })
-      .catch(error => {
-        console.error('Error deleting all feedback questions:', error);
-        showToast('An error occurred while deleting all feedback questions.', 'danger');
-      });
+  const firstConfirmation = confirm('⚠️ WARNING: You are about to delete ALL feedback questions and ALL user responses. This action cannot be undone. Are you sure?');
+  
+  if (firstConfirmation) {
+    const secondConfirmation = confirm('FINAL CHECK: Are you ABSOLUTELY certain? This will wipe the entire feedback database.');
+    
+    if (secondConfirmation) {
+      fetch('/feedback/delete-all', { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showToast('All feedback questions and their responses have been deleted.');
+            fetchDataAndRender();
+          } else {
+            showToast('Failed to delete all feedback questions. Please try again.', 'danger');
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting all feedback questions:', error);
+          showToast('An error occurred while deleting all feedback questions.', 'danger');
+        });
+    }
   }
 }
 

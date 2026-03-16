@@ -5,6 +5,8 @@ const db = require('../config/database');
 const axios = require('axios');
 require('dotenv').config(); // Load environment variables
 
+
+
 //---------------------------------------------------------
 // Helper function to aggregate responses
 //---------------------------------------------------------
@@ -160,14 +162,15 @@ router.post('/create', async (req, res) => {
         versionNameValue
     ];
 
+
+
     try {
         await db.query(query, values);
-        req.flash('success', 'Question successfully inserted.');
-        res.redirect('/feedback');
+        res.json({ success: true, message: 'Question successfully inserted.' });
     } catch (error) {
         console.error('Error creating feedback question:', error);
-        req.flash('error', 'Failed to insert the question.');
-        res.redirect('/feedback');
+
+        res.status(500).json({ success: false, message: 'Failed to insert the question.' });
     }
 });
 
