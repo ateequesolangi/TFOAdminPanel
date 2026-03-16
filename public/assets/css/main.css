@@ -216,13 +216,16 @@ h6 { font-size: 0.875rem; }
 }
 
 .sidebar-header {
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 100px;
 }
 
 .sidebar-header .logo-icon {
-    height: 48px;
+    height: 70px;
     width: auto;
     filter: drop-shadow(0 0 10px var(--primary-glow));
     transition: var(--transition);
