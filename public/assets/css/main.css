@@ -182,12 +182,12 @@ h6 { font-size: 0.875rem; }
 .content-area,
 .page-content-wrapper {
     margin-left: var(--sidebar-width);
-    padding: 2rem 2.5rem;
+    padding: 2rem 2rem 2rem 4rem;
     padding-top: calc(var(--header-height) + 2rem);
     transition: var(--transition);
     min-height: 100vh;
     position: relative;
-    width: auto;
+    width: calc(100% - var(--sidebar-width));
 }
 
 .page-content {
@@ -215,13 +215,15 @@ h6 { font-size: 0.875rem; }
 }
 
 .sidebar-header {
-    padding: 2rem 1.5rem 1.5rem;
+    padding: 2.5rem 1.5rem 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-bottom: 1px solid var(--border-glass);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative !important;
+    height: auto !important;
 }
 
 .sidebar-header .logo-icon {
