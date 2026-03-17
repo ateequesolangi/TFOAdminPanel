@@ -1539,3 +1539,69 @@ hr {
 .card .card-actions .delete-icon:hover {
     transform: translateY(-1px) scale(1.05);
 }
+
+/* Theme toggle and light theme overrides */
+html.dark-theme {
+    color-scheme: dark;
+}
+
+html.light-theme {
+    color-scheme: light;
+    --bg-base:        #F3F7FB;
+    --bg-dark:        #E8EEF6;
+    --bg-surface:     #FFFFFF;
+    --bg-surface-2:   #EDF3FA;
+    --bg-card:        rgba(255, 255, 255, 0.78);
+    --bg-card-solid:  #FFFFFF;
+    --bg-hover:       rgba(15, 23, 42, 0.05);
+    --bg-input:       rgba(255, 255, 255, 0.92);
+    --glass-bg:       rgba(255, 255, 255, 0.74);
+    --text-main:      #0F172A;
+    --text-secondary: #334155;
+    --text-muted:     #64748B;
+    --text-faint:     #94A3B8;
+    --border-glass:   rgba(15, 23, 42, 0.08);
+    --border-subtle:  rgba(15, 23, 42, 0.05);
+    --border-focus:   rgba(99, 102, 241, 0.28);
+    --shadow-sm:      0 1px 3px rgba(15, 23, 42, 0.08);
+    --shadow-md:      0 10px 24px rgba(15, 23, 42, 0.08);
+    --shadow-lg:      0 18px 42px rgba(15, 23, 42, 0.1);
+}
+
+html.light-theme body {
+    background: linear-gradient(180deg, #F8FBFF 0%, #EEF4FB 100%);
+}
+
+html.light-theme body::before {
+    background:
+        radial-gradient(ellipse 620px 420px at 8% 12%, rgba(99, 102, 241, 0.10) 0%, transparent 100%),
+        radial-gradient(ellipse 560px 360px at 92% 20%, rgba(34, 211, 238, 0.08) 0%, transparent 100%),
+        radial-gradient(ellipse 520px 360px at 78% 88%, rgba(6, 214, 160, 0.08) 0%, transparent 100%);
+}
+
+html.light-theme .top-header {
+    background: rgba(255, 255, 255, 0.82);
+    border-bottom-color: rgba(15, 23, 42, 0.08);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+html.light-theme .header-icon-btn,
+html.light-theme .profile-btn,
+html.light-theme .search-bar,
+html.light-theme .glass-card,
+html.light-theme .modal-content,
+html.light-theme .dropdown-menu {
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+html.light-theme .notification-dot {
+    border-color: #F8FBFF;
+}
+
+.theme-toggle-btn {
+    overflow: hidden;
+}
+
+.theme-toggle-btn:hover {
+    transform: translateY(-1px);
+}

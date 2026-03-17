@@ -14,6 +14,13 @@
     <!-- Loader -->
     <link href="assets/css/pace.min.css" rel="stylesheet" />
     <script src="assets/js/pace.min.js"></script>
+    <script>
+        (function () {
+            const storedTheme = localStorage.getItem('tfo-theme');
+            const theme = storedTheme === 'light-theme' ? 'light-theme' : 'dark-theme';
+            document.documentElement.classList.add(theme);
+        })();
+    </script>
 
     <!-- Plugins -->
     <link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />

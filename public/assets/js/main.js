@@ -169,7 +169,32 @@ $(function() {
 
 
 
+    const themeStorageKey = "tfo-theme";
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    const themeToggleIcon = document.getElementById("themeToggleIcon");
 
+    function applyTheme(theme) {
+        const normalizedTheme = theme === "light-theme" ? "light-theme" : "dark-theme";
+        document.documentElement.classList.remove("light-theme", "dark-theme");
+        document.documentElement.classList.add(normalizedTheme);
+        localStorage.setItem(themeStorageKey, normalizedTheme);
+
+        if (themeToggleBtn && themeToggleIcon) {
+            const isLightTheme = normalizedTheme === "light-theme";
+            themeToggleIcon.setAttribute("name", isLightTheme ? "moon-outline" : "sunny-outline");
+            themeToggleBtn.setAttribute("aria-label", isLightTheme ? "Switch to dark theme" : "Switch to light theme");
+            themeToggleBtn.setAttribute("title", isLightTheme ? "Switch to dark theme" : "Switch to light theme");
+            themeToggleBtn.classList.toggle("is-light", isLightTheme);
+        }
+    }
+
+    if (themeToggleBtn) {
+        applyTheme(localStorage.getItem(themeStorageKey) || "dark-theme");
+        themeToggleBtn.addEventListener("click", function() {
+            const nextTheme = document.documentElement.classList.contains("light-theme") ? "dark-theme" : "light-theme";
+            applyTheme(nextTheme);
+        });
+    }
 
     new PerfectScrollbar(".header-notifications-list")
 
